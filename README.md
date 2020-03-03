@@ -2,8 +2,9 @@
 
 This repo contains scripts and files for deploying secretless broker demo on GKE with Istio enabled
 ```
-Note: This repo contains sensitive info, like hardcoded passwords and IP, intentionally for demostration purpose. 
-None of them are real and all of them do not work.
+Note: This repo contains sensitive info, like hardcoded passwords and IP, 
+      intentionally for demostration purpose. 
+      None of them are real and all of them do not work.
 ```
 
 ![secretless](https://github.com/quincycheng/secretless-broker-on-gke/raw/master/images/secretless_sg_ntuc%20v0.1.png)
@@ -11,15 +12,19 @@ None of them are real and all of them do not work.
 
 # Prepare the environment
 
-## Materials
+## What you will need
+ - GCP accounts, with billing activited
  - This repo, files & scripts are under `source` folder
  - Sample world database from MySQL, can be downloaded at https://dev.mysql.com/doc/index-other.html
+ - 7 avaliable `in-use IP address global` quota from GCP, check `IAM & Admin` > `Quotas` section
+ - Docker client & local registry (included by default Docker server installation)
 
 
 ## Build a k8s cluster
-1. Login to cloud.google.com
+1. Login to https://cloud.google.com
 2. Visit the Kubernetes Engine page in the Google Cloud Console.
 3. Install `gcloud` & `kubectl` clients
+   https://cloud.google.com/sdk/docs/quickstarts
 4. Deploy GKE with Istio 
    https://cloud.google.com/istio/docs/istio-on-gke/installing#creating_a_cluster_with_istio_on_gke
 5. Install Helm client 
@@ -30,9 +35,7 @@ None of them are real and all of them do not work.
 1. Create a new database instance based on MySQL
 2. Import the world sample database
 3. Create a new user that can access & read the world database
-4. Make sure the k8s cluster are allowed to access this databased, configured in `Connections` section
-
-
+4. Make sure the k8s cluster are allowed to access this database, configured in `Connections` section
 
 
 ## Setup kubectl
