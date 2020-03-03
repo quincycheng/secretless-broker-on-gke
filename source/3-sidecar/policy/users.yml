@@ -1,0 +1,30 @@
+# initializes users
+# omar - kubernetes admin
+# abraham - devops admin
+# carol - developer
+
+- !group kube_admin
+- !group devops
+- !group ops
+
+# kube_admin and devops groups are members of the ops admin group
+- !grant
+  role: !group ops
+  members:
+  - !group kube_admin
+  - !group devops
+
+- !user omar
+- !grant
+  role: !group kube_admin
+  member: !user omar
+
+- !user abraham
+- !grant
+  role: !group devops
+  member: !user abraham
+
+- !user carol
+- !grant
+  role: !group devops
+  member: !user carol

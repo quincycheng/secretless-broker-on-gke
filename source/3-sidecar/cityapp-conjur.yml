@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cityapp-sidecar
+  labels:
+    app: cityapp-sidecar
+spec:
+  ports:
+  - port: 3000
+    name: http
+  selector:
+    app: cityapp-sidecar
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cityapp-sidecar-sa
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: cityapp-sidecar
+  name: cityapp-sidecar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cityapp-sidecar
+  template:
+    metadata:
+      labels:
+        app: cityapp-sidecar
+    spec:
+      serviceAccountName: cityapp-sidecar-sa
+      containers:
+      - image: {{ TEST_APP_DOCKER_IMAGE }}
+        imagePullPolicy: IfNotPresent
+        name: cityapp-sidecar
+        ports:
+        - containerPort: 8080
+        env:
+          - name: DBAddress
+            value: '<conjur fqdn or ip>'
+          - name: DBPort
+            value: "3306"
+          - name: DBName
+            value: "world"
+          - name: CONJUR_VERSION
+            value: '5'
+          - name: CONJUR_APPLIANCE_URL
+            value: "{{ CONJUR_APPLIANCE_URL }}"
+          - name: CONJUR_ACCOUNT
+            value: {{ CONJUR_ACCOUNT }}
+          - name: CONJUR_AUTHN_TOKEN_FILE
+            value: /run/conjur/access-token
+          - name: CONJUR_SSL_CERTIFICATE
+            valueFrom:
+              configMapKeyRef:
+                name: conjur-cert
+                key: ssl-certificate
+        volumeMounts:
+          - mountPath: /run/conjur
+            name: conjur-access-token
+            readOnly: true
+      - image: cyberark/conjur-kubernetes-authenticator
+        imagePullPolicy: IfNotPresent
+        name: authenticator
+        env:
+          - name: CONJUR_VERSION
+            value: '5'
+          - name: CONTAINER_MODE
+            value: sidecar
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: CONJUR_AUTHN_URL
+            value: "{{ CONJUR_AUTHN_URL }}"
+          - name: CONJUR_ACCOUNT
+            value: "{{ CONJUR_ACCOUNT }}"
+          - name: CONJUR_AUTHN_LOGIN
+            value: "host/conjur/authn-k8s/dev/apps/cityapp/service_account/cityapp-sidecar-sa"
+          - name: CONJUR_SSL_CERTIFICATE
+            valueFrom:
+              configMapKeyRef:
+                name: conjur-cert
+                key: ssl-certificate
+        volumeMounts:
+          - mountPath: /run/conjur
+            name: conjur-access-token
+      volumes:
+        - name: conjur-access-token
+          emptyDir:
+            medium: Memory

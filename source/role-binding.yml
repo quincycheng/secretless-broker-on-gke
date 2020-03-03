@@ -1,0 +1,14 @@
+---
+kind: RoleBinding
+# Change the following to match your K8s version
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+name: cityapp-conjur-authenticator-role-binding-conjur
+namespace: cityapp
+subjects:
+- kind: ServiceAccount
+  name: conjur-cluster
+  namespace: conjur
+roleRef:
+apiGroup: rbac.authorization.k8s.io
+kind: ClusterRole
