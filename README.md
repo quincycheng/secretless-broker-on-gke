@@ -43,37 +43,10 @@ Note: This repo contains sensitive info, like hardcoded passwords and IP,
 gcloud container clusters get-credentials <cluster name> --region <region, e.g. asia-east2-c>
 ```
 
-# Prepare App Images
 
-1. In `app\orginal`, execute:
-```
-sudo docker build -t cityapp:1.0 .
-docker tag cityapp:1.0 asia.gcr.io/<project name>/cityapp:1.0
-docker push asia.gcr.io/<project name>/cityapp:1.0
-```
-
-2.  In `app\with_summon` folder, execute:
-```
-sudo docker build -t cityapp_summon:1.0 .
-docker tag cityapp_summon:1.0 asia.gcr.io/<project name>/cityapp-summon:1.0
-docker push asia.gcr.io/<project name>/cityapp-summon:1.0
-```
-
-## Cityapp Hard Code App
-In the `1-hardcode` folder, update `cityapp-hardcode.yaml` and execute:
-```
-kubectl apply -f cityapp-hardcode.yaml -n cityapp
-```
-
-## Cityapp k8s secrets App
-In the `2-k8s-secrets` folder, update `cityapp-k8s-secret.yam` and lexecute:
-```
-kubectl create secret generic mysql01-secret --from-literal=password=<db password>
-kubectl apply -n cityapp  -f 2-k8s-secret/cityapp-k8s-secret.yaml
-```
-
-## Install Conjur
+# Setup Conjur
 Note: you can use DAP as well
+
 
 1. Install Conjur OSS  
 ```
@@ -102,6 +75,39 @@ docker run --rm -it -v $(PWD)/mydata/:/root cyberark/conjur-cli:5 user update_pa
 docker run --rm -it -v $(PWD)/mydata/:/root cyberark/conjur-cli:5 authn logout
 ```
 
+# Application
+
+## Preparing the container images
+
+1. In `app\orginal`, execute:
+```
+sudo docker build -t cityapp:1.0 .
+docker tag cityapp:1.0 asia.gcr.io/<project name>/cityapp:1.0
+docker push asia.gcr.io/<project name>/cityapp:1.0
+```
+
+2.  In `app\with_summon` folder, execute:
+```
+sudo docker build -t cityapp_summon:1.0 .
+docker tag cityapp_summon:1.0 asia.gcr.io/<project name>/cityapp-summon:1.0
+docker push asia.gcr.io/<project name>/cityapp-summon:1.0
+```
+
+
+## Cityapp Hard Code App
+In the `1-hardcode` folder, update `cityapp-hardcode.yaml` and execute:
+```
+kubectl apply -f cityapp-hardcode.yaml -n cityapp
+```
+
+
+## Cityapp k8s secrets App
+In the `2-k8s-secrets` folder, update `cityapp-k8s-secret.yam` and lexecute:
+```
+kubectl create secret generic mysql01-secret --from-literal=password=<db password>
+kubectl apply -n cityapp  -f 2-k8s-secret/cityapp-k8s-secret.yaml
+```
+
 
 ## Cityapp sidecar & secretless app
 
@@ -123,9 +129,4 @@ This section make use of the following references:
 1. Go to `4-secretless` folder.
 2. Update `bootstrap.env`, `secretless.yml` & `cityapp-secretless.yml`
 3. Execute `1_deploy_secretless.sh`
-
-
-
-
-
 
