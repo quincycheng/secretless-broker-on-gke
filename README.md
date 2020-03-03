@@ -2,7 +2,7 @@
 
 This repo contains scripts and files for deploying secretless broker demo on GKE with Istio enabled
 ```
-Note: This repo contains sensitive info, like hardcoded passwords and IP, 
+Note: This repo contains FAKE sensitive info, like hardcoded passwords and IP, 
       intentionally for demostration purpose. 
       None of them are real and all of them do not work.
 ```
