@@ -28,6 +28,7 @@ RUN apk update && \
 WORKDIR /usr/src
 
 RUN gem install -N activesupport --version 4.2.11.1
+RUN gem install -N sinatra
 RUN gem install mysql2 --platform=ruby
 
 COPY cityapp.rb  /usr/src/
